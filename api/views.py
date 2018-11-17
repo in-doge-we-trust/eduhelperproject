@@ -1,4 +1,5 @@
 # Create your views here.
+from rest_auth.registration.views import RegisterView
 from rest_framework import generics
 from api.serializers import *
 
@@ -66,3 +67,7 @@ class CommentList(generics.ListCreateAPIView):
 class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+
+class CustomRegistration(RegisterView):
+    serializer_class = CustomRegistrationSerializer
