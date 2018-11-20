@@ -1,3 +1,5 @@
+from abc import ABC
+
 from django.contrib.auth.models import User
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers

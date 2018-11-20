@@ -1,6 +1,8 @@
 # Create your views here.
+
 from rest_auth.registration.views import RegisterView
 from rest_framework import generics
+from api.permissions import *
 from api.serializers import *
 
 
@@ -17,56 +19,70 @@ class TagDetails(generics.RetrieveUpdateDestroyAPIView):
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserDetails(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    # TODO Read more about permissions
-    # permission_classes = permissions.IsAuthenticated
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class ProfileDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
 
 class NewsList(generics.ListCreateAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
 
 class AttachmentList(generics.ListCreateAPIView):
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class AttachmentDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class CommentList(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
 
 class CustomRegistration(RegisterView):
