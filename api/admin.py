@@ -13,7 +13,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class NewsAdmin(admin.ModelAdmin):
-    fields = ('text', 'tags', 'author', 'created')
+    fields = ('text', 'tags', 'author')
 
 
 class AttachmentAdmin(admin.ModelAdmin):
