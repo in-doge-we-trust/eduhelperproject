@@ -1,4 +1,7 @@
+from abc import ABC
+
 from django.contrib.auth.models import User
+from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from api.models import Tag, Profile, News, Comment, Attachment, Event
 
@@ -45,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'is_active',
+        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active',
                   'date_joined', 'profile', 'news', 'comments', 'files')
 
 
@@ -53,3 +56,14 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('id', 'title', 'description', 'creator', 'news', 'date')
+
+
+class CustomRegistrationSerializer(RegisterSerializer):
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+
+    def custom_signup(self, request, user):
+        user.first_name = self.validated_data.get('first_name', '')
+        user.last_name = self.validated_data.get('last_name', '')
+        user.save(update_fields=['first_name', 'last_name'])
+
