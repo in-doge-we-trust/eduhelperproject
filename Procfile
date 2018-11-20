@@ -1,1 +1,1 @@
-web: gunicorn eduhelper.wsgi --log-file--
+web: gunicorn eduhelper.wsgi --log-file -
