@@ -15,6 +15,12 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'subscribers', 'news_marked')
 
 
+class TagShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('id', 'name')
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.id')
 
