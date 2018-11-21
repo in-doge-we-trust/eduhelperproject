@@ -7,8 +7,8 @@ from api.models import Tag, Profile, News, Comment, Attachment, Event
 
 
 class TagSerializer(serializers.ModelSerializer):
-    subscribers = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    news_marked = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    subscribers = serializers.PrimaryKeyRelatedField(many=True, read_only=True, allow_null=True)
+    news_marked = serializers.PrimaryKeyRelatedField(many=True, read_only=True, allow_null=True)
 
     class Meta:
         model = Tag
@@ -53,9 +53,9 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
-    comments = CommentSerializer(many=True)
-    attachments = AttachmentSerializer(many=True)
-    tags = TagShortSerializer(many=True)
+    comments = CommentSerializer(many=True, allow_null=True)
+    attachments = AttachmentSerializer(many=True, allow_null=True)
+    tags = TagShortSerializer(many=True, allow_null=True)
 
     class Meta:
         model = News

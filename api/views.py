@@ -12,9 +12,10 @@ class TagList(generics.ListCreateAPIView):
     serializer_class = TagSerializer
 
 
-class TagDetails(generics.RetrieveUpdateDestroyAPIView):
+class TagDetails(generics.RetrieveAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (permissions.IsAdminUser, )
 
 
 class UserList(generics.ListAPIView):
@@ -23,19 +24,19 @@ class UserList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
 
-class UserDetails(generics.RetrieveAPIView):
+class UserDetails(generics.RetrieveAPIView,):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
 
-class ProfileList(generics.ListCreateAPIView):
+class ProfileList(generics.ListAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
 
-class ProfileDetails(generics.RetrieveUpdateDestroyAPIView):
+class ProfileDetails(generics.RetrieveAPIView, generics.UpdateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
@@ -83,6 +84,21 @@ class CommentList(generics.ListCreateAPIView):
 class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
+
+
+class EventList(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
+
+class EventDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
     permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
 
