@@ -23,10 +23,20 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'tags', 'photo_url')
 
 
-class NewsSerializer(serializers.ModelSerializer):
+class UserShortInfoSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(many=False, read_only=True)
+
     class Meta:
-        model = News
-        fields = ('id', 'text', 'tags', 'author', 'comments', 'attachments', 'created')
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'profile')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserShortInfoSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'author', 'like_counter', 'news_commented')
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
@@ -35,10 +45,14 @@ class AttachmentSerializer(serializers.ModelSerializer):
         fields = ('id', 'url', 'label', 'owner', 'attached_to')
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class NewsSerializer(serializers.ModelSerializer):
+    author = UserShortInfoSerializer(many=False, read_only=True)
+    comments = CommentSerializer(many=True)
+    attachments = AttachmentSerializer(many=True)
+
     class Meta:
-        model = Comment
-        fields = ('id', 'text', 'author', 'like_counter', 'news_commented')
+        model = News
+        fields = ('id', 'text', 'tags', 'author', 'comments', 'attachments', 'created')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -53,6 +67,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
+    creator = UserShortInfoSerializer(many=False, read_only=True)
+
     class Meta:
         model = Event
         fields = ('id', 'title', 'description', 'creator', 'news', 'date')

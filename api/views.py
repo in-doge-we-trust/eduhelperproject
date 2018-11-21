@@ -2,6 +2,7 @@
 
 from rest_auth.registration.views import RegisterView
 from rest_framework import generics
+
 from api.permissions import *
 from api.serializers import *
 
@@ -87,3 +88,13 @@ class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
 
 class CustomRegistration(RegisterView):
     serializer_class = CustomRegistrationSerializer
+
+
+class CurrentUser(generics.RetrieveAPIView,
+                  generics.UpdateAPIView):
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
