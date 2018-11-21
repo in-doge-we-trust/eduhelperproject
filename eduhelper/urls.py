@@ -26,5 +26,6 @@ urlpatterns = [
     path('auth/registration/', include('rest_auth.registration.urls')),
     path('auth/get-token/', obtain_jwt_token),
     path('auth/verify-token/', verify_jwt_token),
+    path('auth/refresh-token/', refresh_jwt_token),
     path('auth/get-current-user/', CurrentUser.as_view()),
 ]
