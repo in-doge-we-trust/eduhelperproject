@@ -19,8 +19,8 @@ class Profile(models.Model):
 
 class News(models.Model):
     text = models.TextField(blank=False, default='')
-    tags = models.ManyToManyField(Tag, related_name='news_marked', blank=True, null=True)
-    author = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='news')
+    tags = models.ManyToManyField(Tag, related_name='news_marked', blank=True)
+    author = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, related_name='news')
     created = models.DateTimeField(auto_now_add=True)
 
 

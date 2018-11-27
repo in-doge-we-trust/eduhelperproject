@@ -53,9 +53,9 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
-    comments = CommentSerializer(many=True, allow_null=True)
-    attachments = AttachmentSerializer(many=True, allow_null=True)
-    tags = TagShortSerializer(many=True, allow_null=True)
+    comments = CommentSerializer(many=True, required=False)
+    attachments = AttachmentSerializer(many=True, required=False)
+    tags = TagShortSerializer(many=True, required=False)
 
     class Meta:
         model = News

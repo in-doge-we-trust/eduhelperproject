@@ -120,14 +120,17 @@ WSGI_APPLICATION = 'eduhelper.wsgi.application'
 
 # Configure the JWTs to expire after 1 hour, and allow users to refresh near-expiration tokens
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=3),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
     'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30),
 }
 
 # Make JWT Auth the default authentication mechanism for Django
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # Disable for deployment!
+        # 'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -183,6 +186,7 @@ STATIC_URL = '/static/'
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
+# Disable this for local dev!
 django_heroku.settings(locals())
 
 
