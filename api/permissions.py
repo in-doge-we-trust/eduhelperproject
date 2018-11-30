@@ -1,15 +1,6 @@
 from rest_framework import permissions
 
 
-class IsOwnerOrAdminUser(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        return request.user.is_authenticated
-
-    def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user or obj.user == request.user or request.user.is_staff
-
-
 class IsOwnerOrAdminUserOrReadOnly(permissions.BasePermission):
 
     def has_permission(self, request, view):
@@ -17,7 +8,19 @@ class IsOwnerOrAdminUserOrReadOnly(permissions.BasePermission):
             return True
 
     def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user or obj.user == request.user or request.user.is_staff
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        else:
+            if hasattr(obj, 'user'):
+                return obj.user == request.user.id
+            elif hasattr(obj, 'owner'):
+                return obj.owner == request.user.id
+            elif hasattr(obj, 'author'):
+                return obj.author == request.user.id
+            elif hasattr(obj, 'creator'):
+                return obj.creator == request.user.id
+            else:
+                return request.user.id == obj.id or request.user.is_staff
 
 
 class IsCurrentUser(permissions.BasePermission):
@@ -26,5 +29,5 @@ class IsCurrentUser(permissions.BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        return obj.pk == request.user.pk
+        return obj.id == request.user.id
 
