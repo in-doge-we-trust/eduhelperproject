@@ -28,7 +28,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 env = environ.Env(
     SECRET_KEY=str,
     DEBUG=(bool, False),
-    DATABASE_URL=str
+    DATABASE_URL=str,
+    SESSION_AUTH=str,
 )
 
 # Quick-start development settings - unsuitable for production
@@ -129,8 +130,7 @@ JWT_AUTH = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        # Disable for deployment!
-        # 'rest_framework.authentication.SessionAuthentication',
+        env('SESSION_AUTH'),
     ),
 }
 
