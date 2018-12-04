@@ -1,8 +1,6 @@
-from django.contrib.auth.models import User
-from django.dispatch import receiver
 from django.db.models.signals import post_save
-
-from api.models import Profile, News
+from django.dispatch import receiver
+from api.models import *
 
 
 @receiver(post_save, sender=User)

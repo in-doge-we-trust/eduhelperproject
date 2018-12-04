@@ -29,8 +29,14 @@ env = environ.Env(
     SECRET_KEY=str,
     DEBUG=(bool, False),
     DATABASE_URL=str,
-    SESSION_AUTH=str,
+    AUTH=str,
+    API_KEY=str,
+    MESSAGING_SENDER_ID=str,
 )
+
+# Firebase settings
+API_KEY = env('API_KEY')
+MESSAGING_SENDER_ID = env('MESSAGING_SENDER_ID')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -129,8 +135,7 @@ JWT_AUTH = {
 # Make JWT Auth the default authentication mechanism for Django
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        env('SESSION_AUTH'),
+        env('AUTH'),
     ),
 }
 
@@ -187,6 +192,6 @@ PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # Disable this for local dev!
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 
