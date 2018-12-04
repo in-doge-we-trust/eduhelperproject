@@ -23,10 +23,11 @@ class TagShortSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.id')
+    photo_file = serializers.ImageField(required=False)
 
     class Meta:
         model = Profile
-        fields = ('id', 'user', 'tags', 'photo_url')
+        fields = ('id', 'user', 'tags', 'photo_url', 'photo_file')
 
 
 class UserShortInfoSerializer(serializers.ModelSerializer):
@@ -46,20 +47,28 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(required=False)
+
     class Meta:
         model = Attachment
-        fields = ('id', 'url', 'label', 'owner', 'attached_to')
+        fields = ('id', 'file', 'url', 'label', 'owner', 'attached_to')
 
 
 class NewsSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
-    comments = CommentSerializer(many=True, required=False)
-    attachments = AttachmentSerializer(many=True, required=False)
+    comments = CommentSerializer(many=True, required=False, read_only=True)
+    attachments = AttachmentSerializer(many=True, required=False, read_only=True)
     tags = TagShortSerializer(many=True, required=False)
+    file1 = serializers.FileField(required=False)
+    file2 = serializers.FileField(required=False)
+    file3 = serializers.FileField(required=False)
+    file4 = serializers.FileField(required=False)
+    file5 = serializers.FileField(required=False)
 
     class Meta:
         model = News
-        fields = ('id', 'text', 'tags', 'author', 'comments', 'attachments', 'created')
+        fields = ('id', 'text', 'tags', 'author', 'comments', 'attachments',
+                  'file1', 'file2', 'file3', 'file4', 'file5', 'created')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -69,8 +78,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active',
-                  'date_joined', 'profile', 'news', 'comments', 'files')
+        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'profile', 'news', 'comments', 'files')
 
 
 class EventSerializer(serializers.ModelSerializer):
