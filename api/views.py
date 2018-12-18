@@ -1,12 +1,12 @@
 # Create your views here.
 import uuid
 
+import pyrebase
 from rest_auth.registration.views import RegisterView
 from rest_framework import generics
+
 from api.permissions import *
 from api.serializers import *
-import pyrebase
-
 from eduhelper.settings import API_KEY, MESSAGING_SENDER_ID
 
 config = {
@@ -25,12 +25,37 @@ storage = firebase.storage()
 class TagList(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class TagDetails(generics.RetrieveAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class TagSub(generics.RetrieveAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=self.request.user.id)
+        profile.tags.add(self.get_object())
+        profile.save()
+        return super().get(request, *args, **kwargs)
+
+
+class TagUnsub(generics.RetrieveAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=self.request.user.id)
+        profile.tags.remove(self.get_object())
+        profile.save()
+        return super().get(request, *args, **kwargs)
 
 
 class UserList(generics.ListAPIView):
@@ -65,13 +90,12 @@ class ProfileDetails(generics.RetrieveAPIView, generics.UpdateAPIView):
 
 
 class NewsList(generics.ListCreateAPIView):
-    queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    queryset = News.objects.all().order_by('-created')
+    serializer_class = NewsShortSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-        # //TODO create one new Attachment object for each file from form
 
 
 class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -99,13 +123,20 @@ class AttachmentDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAdminUser,)
 
 
-class CommentList(generics.ListCreateAPIView):
+class CommentList(generics.ListAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class CommentAdd(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(author=User.objects.get(pk=self.request.user.id),
+                        news_commented=News.objects.get(pk=self.kwargs.get('pk')))
 
 
 class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -136,6 +167,7 @@ class CustomRegistration(RegisterView):
 class CurrentUser(generics.RetrieveAPIView,
                   generics.UpdateAPIView):
     serializer_class = UserSerializer
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
     def get_object(self):
         return self.request.user
