@@ -1,8 +1,7 @@
-from abc import ABC
-
 from django.contrib.auth.models import User
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+
 from api.models import Tag, Profile, News, Comment, Attachment, Event
 
 
@@ -24,6 +23,7 @@ class TagShortSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.id')
     photo_file = serializers.ImageField(required=False)
+    tags = TagShortSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
@@ -40,6 +40,8 @@ class UserShortInfoSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
+    like_counter = serializers.IntegerField(read_only=True)
+    news_commented = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Comment
@@ -59,22 +61,27 @@ class NewsSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, required=False, read_only=True)
     attachments = AttachmentSerializer(many=True, required=False, read_only=True)
     tags = TagShortSerializer(many=True, required=False)
-    file1 = serializers.FileField(required=False)
-    file2 = serializers.FileField(required=False)
-    file3 = serializers.FileField(required=False)
-    file4 = serializers.FileField(required=False)
-    file5 = serializers.FileField(required=False)
 
     class Meta:
         model = News
-        fields = ('id', 'text', 'tags', 'author', 'comments', 'attachments',
-                  'file1', 'file2', 'file3', 'file4', 'file5', 'created')
+        fields = ('id', 'text', 'tags', 'author', 'comments', 'attachments', 'created')
+
+
+class NewsShortSerializer(serializers.ModelSerializer):
+    author = UserShortInfoSerializer(many=False, read_only=True)
+    attachments = AttachmentSerializer(many=True, required=False, read_only=True)
+    tags = TagShortSerializer(many=True, required=False)
+
+    class Meta:
+        model = News
+        fields = ('id', 'text', 'tags', 'author', 'attachments', 'created')
 
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(many=False, read_only=True)
-    news = NewsSerializer(many=True)
-    files = AttachmentSerializer(many=True)
+    news = NewsSerializer(many=True, read_only=True)
+    files = AttachmentSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = User

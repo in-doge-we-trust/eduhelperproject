@@ -13,7 +13,7 @@ class Tag(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    tags = models.ManyToManyField(Tag, related_name='subscribers')
+    tags = models.ManyToManyField(Tag, related_name='subscribers', blank=True)
     photo_url = models.URLField(blank=True)
 
 
