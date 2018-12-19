@@ -4,7 +4,7 @@ import uuid
 import pyrebase
 from rest_auth.registration.views import RegisterView
 from rest_framework import generics
-
+from allauth.account.models import *
 from api.permissions import *
 from api.serializers import *
 from eduhelper.settings import API_KEY, MESSAGING_SENDER_ID
