@@ -182,7 +182,8 @@ USE_L10N = False
 
 USE_TZ = True
 
-DATETIME_INPUT_FORMAT = '%Y-%m-%d %H:%M:%S'
+# '2006-10-25 14:30'
+DATETIME_INPUT_FORMAT = '%Y-%m-%d %H:%M'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -192,6 +193,6 @@ PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # Disable this for local dev!
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 

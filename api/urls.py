@@ -18,8 +18,10 @@ urlpatterns = [
     path('profiles/<int:pk>', views.ProfileDetails.as_view(), name='profile'),
     path('news/<int:pk>', views.NewsDetails.as_view(), name='news_detail'),
     path('news/<int:pk>/add-comment', views.CommentAdd.as_view(), name='add_comment'),
+    path('feed', views.Feed.as_view(), name='feed'),
     path('attachments/<int:pk>', views.AttachmentDetails.as_view(), name='attachment'),
     path('comments/<int:pk>', views.CommentDetails.as_view(), name='comment'),
+    path('comments/my', views.UserComments.as_view(), name='comments_my'),
     path('events/<int:pk>', views.EventDetails.as_view(), name='event'),
 ]
 
