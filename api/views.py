@@ -4,7 +4,8 @@ import uuid
 import pyrebase
 from rest_auth.registration.views import RegisterView
 from rest_framework import generics
-from allauth.account.models import *
+from rest_framework.decorators import *
+
 from api.permissions import *
 from api.serializers import *
 from eduhelper.settings import API_KEY, MESSAGING_SENDER_ID
@@ -81,27 +82,47 @@ class ProfileDetails(generics.RetrieveAPIView, generics.UpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
-    def patch(self, request, *args, **kwargs):
-        if request.data['photo_file'] is not None:
-            path = storage.child(self.request.user.email).child('avatar')
-            path.put(request.data['photo_file'])
-            request.data['photo_url'] = path.get_url()
-        return super().patch(request, *args, **kwargs)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def change_photo(request):
+    image = request.FILES['image']
+    path = storage.child(request.user.email).child('avatar').put(image)
+    user_profile = Profile.objects.get(user=request.user.id)
+    user_profile.photo_url = path.get_url()
+    user_profile.save()
 
 
+# TODO Check workability!!!
 class NewsList(generics.ListCreateAPIView):
     queryset = News.objects.all().order_by('-created')
     serializer_class = NewsShortSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        instance = serializer.save(author=self.request.user)
+        user_profile = Profile.objects.get(pk=self.request.user.id)
+        for tag in self.request.data.get('add_tags'):
+            if not Tag.objects.filter(name=tag).exists():
+                tag_new = Tag.objects.create(name=tag)
+                user_profile.tags.add(tag_new)
+            instance.tags.add(Tag.objects.get(name=tag))
+        user_profile.save()
 
 
 class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
     permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
+
+
+class Feed(generics.ListAPIView):
+    serializer_class = NewsShortSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        return News.objects.filter(tags__in=profile.tags.all()).distinct().order_by('-created')
 
 
 class AttachmentList(generics.ListCreateAPIView):
@@ -124,7 +145,7 @@ class AttachmentDetails(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CommentList(generics.ListAPIView):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('-created')
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -137,6 +158,14 @@ class CommentAdd(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(author=User.objects.get(pk=self.request.user.id),
                         news_commented=News.objects.get(pk=self.kwargs.get('pk')))
+
+
+class UserComments(generics.ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return Comment.objects.filter(author=self.request.user).order_by('-created')
 
 
 class CommentDetails(generics.RetrieveUpdateDestroyAPIView):

@@ -11,13 +11,13 @@ class IsOwnerOrAdminUserOrReadOnly(permissions.BasePermission):
             return True
         else:
             if hasattr(obj, 'user'):
-                return obj.user == request.user.id
+                return obj.user == request.user
             elif hasattr(obj, 'owner'):
-                return obj.owner == request.user.id
+                return obj.owner == request.user
             elif hasattr(obj, 'author'):
-                return obj.author == request.user.id
+                return obj.author == request.user
             elif hasattr(obj, 'creator'):
-                return obj.creator == request.user.id
+                return obj.creator == request.user
             else:
                 return request.user.id == obj.id or request.user.is_staff
 

@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_jwt.views import *
 
-from api.views import CurrentUser
+from api import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,5 +27,6 @@ urlpatterns = [
     path('auth/get-token/', obtain_jwt_token),
     path('auth/verify-token/', verify_jwt_token),
     path('auth/refresh-token/', refresh_jwt_token),
-    path('auth/get-current-user/', CurrentUser.as_view()),
+    path('auth/get-current-user/', views.CurrentUser.as_view()),
+    path('auth/get-current-user/change-photo', views.change_photo),
 ]

@@ -45,22 +45,25 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'author', 'like_counter', 'news_commented')
+        fields = ('id', 'text', 'author', 'like_counter', 'created', 'news_commented')
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
-    file = serializers.FileField(required=False)
+    file = serializers.FileField()
+    url = serializers.URLField(read_only=True)
+    owner = serializers.PrimaryKeyRelatedField(read_only=True)
+    attached_to = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Attachment
-        fields = ('id', 'file', 'url', 'label', 'owner', 'attached_to')
+        fields = ('id', 'file', 'url', 'label', 'owner', 'attached_to', 'uploaded')
 
 
 class NewsSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
-    comments = CommentSerializer(many=True, required=False, read_only=True)
-    attachments = AttachmentSerializer(many=True, required=False, read_only=True)
-    tags = TagShortSerializer(many=True, required=False)
+    comments = CommentSerializer(many=True, read_only=True)
+    attachments = AttachmentSerializer(many=True, read_only=True)
+    tags = TagShortSerializer(many=True, read_only=True)
 
     class Meta:
         model = News
@@ -70,11 +73,22 @@ class NewsSerializer(serializers.ModelSerializer):
 class NewsShortSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
     attachments = AttachmentSerializer(many=True, required=False, read_only=True)
-    tags = TagShortSerializer(many=True, required=False)
+    tags = TagShortSerializer(many=True, required=False, read_only=True)
+    # uploads = serializers.ListField(
+    #     child=serializers.FileField(max_length=20000, required=False, allow_empty_file=True),
+    #     required=False, write_only=True
+    # )
+    add_tags = serializers.ListField(
+        child=serializers.CharField(max_length=50), write_only=True,
+    )
 
     class Meta:
         model = News
-        fields = ('id', 'text', 'tags', 'author', 'attachments', 'created')
+        fields = ('id', 'text', 'tags', 'add_tags', 'author', 'attachments', 'created')
+
+    def create(self, validated_data):
+        validated_data.pop('add_tags', None)
+        return super().create(validated_data)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -104,4 +118,10 @@ class CustomRegistrationSerializer(RegisterSerializer):
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
         user.save(update_fields=['first_name', 'last_name'])
+
+
+class ChangePhotoSerializer(serializers.Serializer):
+    image = serializers.ImageField()
+
+
 
