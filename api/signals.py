@@ -18,9 +18,10 @@ def save_user_profile(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def change_user_email(sender, instance, **kwargs):
-    email = instance.email
-    EmailAddress.objects.create(email=email, user=instance, primary=True)
-    EmailAddress.objects.filter(user=instance).exclude(email=email).delete()
+    if not EmailAddress.objects.filter(email=instance.email).exists():
+        email = instance.email
+        EmailAddress.objects.create(email=email, user=instance, primary=True)
+        EmailAddress.objects.filter(user=instance).exclude(email=email).delete()
 
 
 @receiver(post_save, sender=User)
