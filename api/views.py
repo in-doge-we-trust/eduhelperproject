@@ -102,10 +102,11 @@ class NewsList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         instance = serializer.save(author=self.request.user)
         user_profile = Profile.objects.get(pk=self.request.user.id)
+        tag_new = None
         for tag in self.request.data.get('add_tags'):
             if not Tag.objects.filter(name=tag).exists():
                 tag_new = Tag.objects.create(name=tag)
-                user_profile.tags.add(tag_new)
+            user_profile.tags.add(tag_new)
             instance.tags.add(Tag.objects.get(name=tag))
         user_profile.save()
 
