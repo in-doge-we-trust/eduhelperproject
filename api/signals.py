@@ -15,16 +15,3 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
-
-@receiver(post_save, sender=User)
-def change_user_email(sender, instance, **kwargs):
-    if not EmailAddress.objects.filter(email=instance.email).exists():
-        email = instance.email
-        EmailAddress.objects.create(email=email, user=instance, primary=True)
-        EmailAddress.objects.filter(user=instance).exclude(email=email).delete()
-
-
-@receiver(post_save, sender=User)
-def set_username_equal_to_email(sender, instance, created, **kwargs):
-    if created:
-        instance.save(username=instance.email)

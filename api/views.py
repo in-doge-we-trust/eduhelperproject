@@ -2,6 +2,7 @@
 import uuid
 
 import pyrebase
+from allauth.account.models import EmailAddress
 from rest_auth.registration.views import RegisterView
 from rest_framework import generics
 from rest_framework.decorators import *
@@ -201,3 +202,11 @@ class CurrentUser(generics.RetrieveAPIView,
 
     def get_object(self):
         return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        if request.data['email'] != self.request.user.email:
+            EmailAddress.objects.create(email=request.data['email'], user=self.request.user, primary=True)
+            EmailAddress.objects.filter(user=self.request.user).exclude(email=request.data['email']).delete()
+        return super().update(request, *args, **kwargs)
+
+
