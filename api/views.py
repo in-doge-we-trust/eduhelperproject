@@ -6,6 +6,7 @@ from allauth.account.models import EmailAddress
 from rest_auth.registration.views import RegisterView
 from rest_framework import generics
 from rest_framework.decorators import *
+from rest_framework.response import Response
 
 from api.permissions import *
 from api.serializers import *
@@ -90,8 +91,13 @@ def change_photo(request):
     image = request.FILES['image']
     path = storage.child(request.user.email).child('avatar').put(image)
     user_profile = Profile.objects.get(user=request.user.id)
+    url_old = user_profile.photo_url
     user_profile.photo_url = path.get_url()
     user_profile.save()
+    if user_profile.photo_url != url_old:
+        return Response({"message": "User profile photo successfully changed."})
+    else:
+        return Response({"message": "User profile photo changing encountered errors."})
 
 
 # TODO Check workability!!!
@@ -103,11 +109,13 @@ class NewsList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         instance = serializer.save(author=self.request.user)
         user_profile = Profile.objects.get(pk=self.request.user.id)
-        tag_new = None
         for tag in self.request.data.get('add_tags'):
             if not Tag.objects.filter(name=tag).exists():
                 tag_new = Tag.objects.create(name=tag)
-            user_profile.tags.add(tag_new)
+                user_profile.tags.add(tag_new)
+            else:
+                tag_new = Tag.objects.get(name=tag)
+                user_profile.tags.add(tag_new)
             instance.tags.add(Tag.objects.get(name=tag))
         user_profile.save()
 
