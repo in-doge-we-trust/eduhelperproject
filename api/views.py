@@ -146,7 +146,7 @@ class AttachmentDetails(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CommentList(generics.ListAPIView):
-    queryset = Comment.objects.all().order_by('-created')
+    queryset = Comment.objects.all().order_by('-id')
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -166,7 +166,7 @@ class UserComments(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        return Comment.objects.filter(author=self.request.user).order_by('-created')
+        return Comment.objects.filter(author=self.request.user).order_by('-id')
 
 
 class CommentDetails(generics.RetrieveUpdateDestroyAPIView):
