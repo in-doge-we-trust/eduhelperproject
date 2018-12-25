@@ -122,7 +122,6 @@ def change_photo(request):
     return Response({"message": "User profile photo successfully changed."})
 
 
-# TODO Check workability!!!
 class NewsList(generics.ListCreateAPIView):
     queryset = News.objects.all().order_by('-created')
     serializer_class = NewsShortSerializer
@@ -160,7 +159,7 @@ class NewsListByTags(generics.ListAPIView):
         query = News.objects.filter(tags__name__in=tag_names_format)
         for tag in tag_names_format:
             query = query.filter(tags__name__contains=tag)
-        return query.order_by('-created')
+        return query.distinct.order_by('-created')
 
 
 class Feed(generics.ListAPIView):
