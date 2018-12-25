@@ -126,6 +126,21 @@ class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
 
+class NewsListByTags(generics.ListAPIView):
+    serializer_class = NewsShortSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        tag_names = self.request.query_params.getlist('tag')
+        tag_names_format = []
+        for tag in tag_names:
+            tag_names_format.append('#' + tag)
+        query = News.objects.filter(tags__name__in=tag_names_format)
+        for tag in tag_names_format:
+            query = query.filter(tags__name__contains=tag)
+        return query.order_by('-created')
+
+
 class Feed(generics.ListAPIView):
     serializer_class = NewsShortSerializer
     permission_classes = (permissions.IsAuthenticated,)
