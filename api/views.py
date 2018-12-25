@@ -38,11 +38,9 @@ class TagDetails(generics.RetrieveAPIView):
 
 
 class TagSub(generics.RetrieveAPIView):
+    queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        return Tag.objects.get(name=self.kwargs['name'])
 
     def get(self, request, *args, **kwargs):
         profile = Profile.objects.get(user=self.request.user.id)
@@ -116,16 +114,13 @@ class ProfileDetails(generics.RetrieveAPIView, generics.UpdateAPIView):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def change_photo(request):
-    image = request.data.get('image')
-    path = storage.path.child(request.user.email).child('avatar').put(image)
+    image = request.FILES['image']
+    path = storage.child(request.user.email).child('avatar')
+    result = path.put(image)
     user_profile = Profile.objects.get(user=request.user.id)
-    url_old = user_profile.photo_url
     user_profile.photo_url = path.get_url()
     user_profile.save()
-    if user_profile.photo_url != url_old:
-        return Response({"message": "User profile photo successfully changed."})
-    else:
-        return Response({"message": "User profile photo changing encountered errors."})
+    return Response({"message": "User profile photo successfully changed."})
 
 
 # TODO Check workability!!!
