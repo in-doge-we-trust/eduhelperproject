@@ -156,10 +156,10 @@ class NewsListByTags(generics.ListAPIView):
         tag_names_format = []
         for tag in tag_names:
             tag_names_format.append('#' + tag)
-        query = News.objects.filter(tags__name__in=tag_names_format)
+        query = News.objects.filter(tags__name__in=tag_names_format).distinct()
         for tag in tag_names_format:
-            query = query.filter(tags__name__contains=tag)
-        return query.distinct.order_by('-created')
+            query = query.filter(tags__name__contains=tag).distinct()
+        return query.order_by('-created')
 
 
 class Feed(generics.ListAPIView):
