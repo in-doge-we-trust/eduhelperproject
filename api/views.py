@@ -115,10 +115,9 @@ class ProfileDetails(generics.RetrieveAPIView, generics.UpdateAPIView):
 @permission_classes([permissions.IsAuthenticated])
 def change_photo(request):
     image = request.FILES['image']
-    path = storage.child(request.user.email).child('avatar')
-    result = path.put(image)
+    uploaded = storage.child(request.user.email).child('avatar').put(image)
     user_profile = Profile.objects.get(user=request.user.id)
-    user_profile.photo_url = path.get_url()
+    user_profile.photo_url = storage.child(request.user.email).child('avatar').get_url(uploaded['downloadTokens'])
     user_profile.save()
     return Response({"message": "User profile photo successfully changed."})
 
