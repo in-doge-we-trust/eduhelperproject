@@ -38,9 +38,24 @@ class TagDetails(generics.RetrieveAPIView):
 
 
 class TagSub(generics.RetrieveAPIView):
+    serializer_class = TagSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return Tag.objects.get(name=self.kwargs['name'])
+
+    def get(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=self.request.user.id)
+        profile.tags.add(self.get_object())
+        profile.save()
+        return super().get(request, *args, **kwargs)
+
+
+class TagSubByName(generics.RetrieveAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    lookup_field = 'name'
 
     def get(self, request, *args, **kwargs):
         profile = Profile.objects.get(user=self.request.user.id)
@@ -53,6 +68,19 @@ class TagUnsub(generics.RetrieveAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=self.request.user.id)
+        profile.tags.remove(self.get_object())
+        profile.save()
+        return super().get(request, *args, **kwargs)
+
+
+class TagUnsubByName(generics.RetrieveAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    lookup_field = 'name'
 
     def get(self, request, *args, **kwargs):
         profile = Profile.objects.get(user=self.request.user.id)
@@ -88,7 +116,7 @@ class ProfileDetails(generics.RetrieveAPIView, generics.UpdateAPIView):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def change_photo(request):
-    image = request.FILES['image']
+    image = request.FILES['image'].read()
     path = storage.child(request.user.email).child('avatar').put(image)
     user_profile = Profile.objects.get(user=request.user.id)
     url_old = user_profile.photo_url
