@@ -116,7 +116,7 @@ class ProfileDetails(generics.RetrieveAPIView, generics.UpdateAPIView):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def change_photo(request):
-    image = request.FILES['image'].read()
+    image = request.data.get('image')
     path = storage.path.child(request.user.email).child('avatar').put(image)
     user_profile = Profile.objects.get(user=request.user.id)
     url_old = user_profile.photo_url
