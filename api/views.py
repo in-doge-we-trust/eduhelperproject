@@ -235,6 +235,16 @@ class EventDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
 
 
+class EventAdd(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(news=self.kwargs.get('id'),
+                        creator=self.request.user.id)
+
+
 class CustomRegistration(RegisterView):
     serializer_class = CustomRegistrationSerializer
 

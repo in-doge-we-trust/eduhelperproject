@@ -20,6 +20,7 @@ urlpatterns = [
     path('profiles/<int:pk>', views.ProfileDetails.as_view(), name='profile'),
     path('news/<int:pk>', views.NewsDetails.as_view(), name='news_detail'),
     path('news/<int:pk>/add-comment', views.CommentAdd.as_view(), name='add_comment'),
+    path('news/<int:pk>/add-event', views.EventAdd.as_view(), name='add_event'),
     path('feed', views.Feed.as_view(), name='feed'),
     path('find/', views.NewsListByTags.as_view(), name='find'),
     path('attachments/<int:pk>', views.AttachmentDetails.as_view(), name='attachment'),
