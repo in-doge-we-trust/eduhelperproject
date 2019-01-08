@@ -45,7 +45,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'author', 'created', 'like_counter', 'news_commented')
+        fields = ('id', 'text', 'author', 'like_counter', 'news_commented')
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
