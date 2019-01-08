@@ -37,11 +37,12 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='comments')
     like_counter = models.BigIntegerField(default=0)
     news_commented = models.ForeignKey(News, on_delete=models.CASCADE, null=True, blank=False, related_name='comments')
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class Event(models.Model):
     title = models.TextField(blank=False, default='')
     description = models.TextField(blank=True, default='')
     creator = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=False, related_name='events_created')
-    news = models.ForeignKey(News, on_delete=models.CASCADE, null=True, blank=True, related_name='event')
+    news = models.OneToOneField(News, on_delete=models.CASCADE, null=True, blank=True, related_name='event')
     date = models.DateTimeField()

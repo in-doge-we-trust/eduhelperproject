@@ -131,14 +131,16 @@ class NewsList(generics.ListCreateAPIView):
         instance = serializer.save(author=self.request.user)
         user_profile = Profile.objects.get(pk=self.request.user.id)
         for tag in self.request.data.get('add_tags'):
-            if not Tag.objects.filter(name=tag).exists():
-                tag_new = Tag.objects.create(name=tag)
-                user_profile.tags.add(tag_new)
+            print(tag)
+            if Tag.objects.filter(name=tag).exists():
+                print("Tag %s already exists.".format(tag))
+                user_profile.tags.add(Tag.objects.get(name=tag))
             else:
-                tag_new = Tag.objects.get(name=tag)
+                tag_new = Tag.objects.create(name=tag)
+                print("Tag %s created.".format(tag_new.name))
                 user_profile.tags.add(tag_new)
+                print("Tag %s added to user's profile.".format(tag_new.name))
             instance.tags.add(Tag.objects.get(name=tag))
-        user_profile.save()
 
 
 class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -233,6 +235,16 @@ class EventDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
+
+
+class EventAdd(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = (IsOwnerOrAdminUserOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(news=self.kwargs.get('id'),
+                        creator=self.request.user.id)
 
 
 class CustomRegistration(RegisterView):

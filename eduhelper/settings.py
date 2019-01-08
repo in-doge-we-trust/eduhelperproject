@@ -194,7 +194,7 @@ PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # Disable this for local dev!
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 
 
