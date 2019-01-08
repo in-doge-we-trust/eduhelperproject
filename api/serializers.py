@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
-from api.models import Tag, Profile, News, Comment, Attachment, Event
+from api.models import Tag, Profile, News, Comment, Attachment
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -59,21 +59,21 @@ class AttachmentSerializer(serializers.ModelSerializer):
         fields = ('id', 'file', 'url', 'label', 'owner', 'attached_to', 'uploaded')
 
 
-class EventSerializer(serializers.ModelSerializer):
-    creator = UserShortInfoSerializer(many=False, read_only=True)
-    date = serializers.DateTimeField(read_only=True)
-
-    class Meta:
-        model = Event
-        fields = ('id', 'title', 'description', 'creator', 'news', 'date')
-
-
-class EventShortSerializer(serializers.ModelSerializer):
-    date = serializers.DateTimeField(read_only=True)
-
-    class Meta:
-        model = Event
-        fields = ('id', 'title', 'description', 'date')
+# class EventSerializer(serializers.ModelSerializer):
+#     creator = UserShortInfoSerializer(many=False, read_only=True)
+#     date = serializers.DateTimeField(read_only=True)
+#
+#     class Meta:
+#         model = Event
+#         fields = ('id', 'title', 'description', 'creator', 'news', 'date')
+#
+#
+# class EventShortSerializer(serializers.ModelSerializer):
+#     date = serializers.DateTimeField(read_only=True)
+#
+#     class Meta:
+#         model = Event
+#         fields = ('id', 'title', 'description', 'date')
 
 
 class NewsSerializer(serializers.ModelSerializer):

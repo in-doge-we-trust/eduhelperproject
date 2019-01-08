@@ -24,8 +24,8 @@ class CommentAdmin(admin.ModelAdmin):
     fields = ('text', 'author', 'like_counter', 'news_commented')
 
 
-class EventAdmin(admin.ModelAdmin):
-    fields = ('title', 'description', 'creator', 'news', 'date')
+# class EventAdmin(admin.ModelAdmin):
+#     fields = ('title', 'description', 'creator', 'news', 'date')
 
 
 admin.site.register(Profile, ProfileAdmin)
@@ -33,4 +33,4 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Attachment, AttachmentAdmin)
 admin.site.register(Comment, CommentAdmin)
-admin.site.register(Event, EventAdmin)
+# admin.site.register(Event, EventAdmin)

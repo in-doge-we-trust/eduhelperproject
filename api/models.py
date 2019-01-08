@@ -40,9 +40,9 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
 
-class Event(models.Model):
-    title = models.TextField(blank=False, default='')
-    description = models.TextField(blank=True, default='')
-    creator = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=False, related_name='events_created')
-    news = models.OneToOneField(News, on_delete=models.CASCADE, null=True, blank=True, related_name='event')
-    date = models.DateTimeField()
+# class Event(models.Model):
+#     title = models.TextField(blank=False, default='')
+#     description = models.TextField(blank=True, default='')
+#     creator = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=False, related_name='events_created')
+#     news = models.OneToOneField(News, on_delete=models.CASCADE, null=True, blank=True, related_name='event')
+#     date = models.DateTimeField()
