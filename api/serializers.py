@@ -81,7 +81,7 @@ class NewsSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     attachments = AttachmentSerializer(many=True, read_only=True)
     tags = TagShortSerializer(many=True, read_only=True)
-    event = EventShortSerializer(many=False, read_only=True)
+    event = EventShortSerializer(read_only=True, many=False)
 
     class Meta:
         model = News
@@ -99,7 +99,7 @@ class NewsShortSerializer(serializers.ModelSerializer):
     add_tags = serializers.ListField(
         child=serializers.CharField(max_length=50), write_only=True,
     )
-    event = EventShortSerializer(read_only=True)
+    event = EventShortSerializer(read_only=True, many=False)
 
     class Meta:
         model = News
@@ -129,10 +129,3 @@ class CustomRegistrationSerializer(RegisterSerializer):
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
         user.save(update_fields=['first_name', 'last_name'])
-
-
-class ChangePhotoSerializer(serializers.Serializer):
-    image = serializers.ImageField()
-
-
-
