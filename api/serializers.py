@@ -81,29 +81,25 @@ class NewsSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     attachments = AttachmentSerializer(many=True, read_only=True)
     tags = TagShortSerializer(many=True, read_only=True)
-    event = EventShortSerializer(read_only=True, many=False)
+    # event = EventShortSerializer(read_only=True, many=False)
 
     class Meta:
         model = News
-        fields = ('id', 'text', 'tags', 'author', 'event', 'comments', 'attachments', 'created')
+        fields = ('id', 'text', 'tags', 'author', 'comments', 'attachments', 'created')
 
 
 class NewsShortSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
     attachments = AttachmentSerializer(many=True, required=False, read_only=True)
     tags = TagShortSerializer(many=True, required=False, read_only=True)
-    # uploads = serializers.ListField(
-    #     child=serializers.FileField(max_length=20000, required=False, allow_empty_file=True),
-    #     required=False, write_only=True
-    # )
     add_tags = serializers.ListField(
         child=serializers.CharField(max_length=50), write_only=True,
     )
-    event = EventShortSerializer(read_only=True, many=False)
+    # event = EventShortSerializer(read_only=True, many=False)
 
     class Meta:
         model = News
-        fields = ('id', 'text', 'tags', 'event', 'add_tags', 'author', 'attachments', 'created')
+        fields = ('id', 'text', 'tags', 'add_tags', 'author', 'attachments', 'created')
 
     def create(self, validated_data):
         validated_data.pop('add_tags', None)
