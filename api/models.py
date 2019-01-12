@@ -10,11 +10,17 @@ ATTACHMENT_TYPES = (('image', 'image'), ('video', 'video'), ('link', 'link'), ('
 class Tag(models.Model):
     name = models.CharField(max_length=50, blank=False, default='')
 
+    def __str__(self):
+        return self.name
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     tags = models.ManyToManyField(Tag, related_name='subscribers', blank=True)
     photo_url = models.URLField(blank=True)
+
+    def __str__(self):
+        return 'id = {1}, email = "{0}"'.format(self.user.email, self.user.id)
 
 
 class News(models.Model):
@@ -22,6 +28,9 @@ class News(models.Model):
     tags = models.ManyToManyField(Tag, related_name='news_marked', blank=True)
     author = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, related_name='news')
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'text: "{}", created on {}'.format(self.text[:10] + '...', self.created.strftime('%d-%m-%Y %H-%M'))
 
 
 class Attachment(models.Model):
@@ -31,6 +40,9 @@ class Attachment(models.Model):
     label = models.CharField(max_length=50, choices=ATTACHMENT_TYPES, default='link')
     uploaded = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.owner.email
+
 
 class Comment(models.Model):
     text = models.TextField(blank=False, default='')
@@ -39,6 +51,8 @@ class Comment(models.Model):
     news_commented = models.ForeignKey(News, on_delete=models.CASCADE, null=True, blank=False, related_name='comments')
     # created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return 'For: "{}", by {}'.format(self.news_commented.text[:15] + '...', self.author.email)
 
 # class Event(models.Model):
 #     title = models.TextField(blank=False, default='')
