@@ -142,6 +142,9 @@ class NewsList(generics.ListCreateAPIView):
                 print("Tag %s added to user's profile.".format(tag_new.name))
             instance.tags.add(Tag.objects.get(name=tag))
 
+    def get_queryset(self):
+#     TODO get newslist with offset (start, end)
+
 
 class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = News.objects.all()
