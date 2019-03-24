@@ -123,7 +123,6 @@ def change_photo(request):
 
 
 class NewsList(generics.ListCreateAPIView):
-    queryset = News.objects.all().order_by('-created')
     serializer_class = NewsShortSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -141,6 +140,14 @@ class NewsList(generics.ListCreateAPIView):
                 user_profile.tags.add(tag_new)
                 print("Tag %s added to user's profile.".format(tag_new.name))
             instance.tags.add(Tag.objects.get(name=tag))
+
+    def get_queryset(self):
+        start = self.request.GET.get('start', default=0)
+        end = self.request.GET.get('end', default=0)
+        if int(start) > 0 and int(end) != 0:
+            return News.objects.filter(pk__lte=end).filter(pk__gte=start).order_by('-created')
+        else:
+            return News.objects.all()
 
 
 class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
