@@ -147,7 +147,7 @@ class NewsList(generics.ListCreateAPIView):
         if int(start) > 0 and int(end) != 0:
             return News.objects.filter(pk__lte=end).filter(pk__gte=start).order_by('-created')
         else:
-            return News.objects.all()
+            return News.objects.all().order_by('-created')
 
 
 class NewsDetails(generics.RetrieveUpdateDestroyAPIView):
