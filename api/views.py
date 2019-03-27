@@ -142,10 +142,10 @@ class NewsList(generics.ListCreateAPIView):
             instance.tags.add(Tag.objects.get(name=tag))
 
     def get_queryset(self):
-        start = self.request.GET.get('start', default=0)
-        end = self.request.GET.get('end', default=0)
-        if int(start) > 0 and int(end) != 0:
-            return News.objects.filter(pk__lte=end).filter(pk__gte=start).order_by('-created')
+        start = int(self.request.GET.get('start', default=0))
+        end = int(self.request.GET.get('end', default=0))
+        if start != 0 and end != 0:
+            return News.objects.all().order_by('-created')[start-1:end]
         else:
             return News.objects.all().order_by('-created')
 
@@ -176,8 +176,13 @@ class Feed(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
+        start = int(self.request.GET.get('start', default=0))
+        end = int(self.request.GET.get('end', default=0))
         profile = Profile.objects.get(user=self.request.user)
-        return News.objects.filter(tags__in=profile.tags.all()).distinct().order_by('-created')
+        if start != 0 and end != 0:
+            return News.objects.filter(tags__in=profile.tags.all()).distinct().order_by('-created')[start-1:end]
+        else:
+            return News.objects.filter(tags__in=profile.tags.all()).distinct().order_by('-created')
 
 
 class AttachmentList(generics.ListCreateAPIView):
