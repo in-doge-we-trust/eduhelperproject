@@ -27,6 +27,8 @@ urlpatterns = [
     path('comments/<int:pk>', views.CommentDetails.as_view(), name='comment'),
     path('comments/my', views.UserComments.as_view(), name='comments_my'),
     # path('events/<int:pk>', views.EventDetails.as_view(), name='event'),
+    path('answers/', views.AnswersList.as_view(), name='answers'),
+    path('comments/<int:pk>/add-answer', views.AddAnswer.as_view(), name='add-answer'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

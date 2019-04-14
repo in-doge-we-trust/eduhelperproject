@@ -49,10 +49,10 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='comments')
     like_counter = models.BigIntegerField(default=0)
     news_commented = models.ForeignKey(News, on_delete=models.CASCADE, null=True, blank=False, related_name='comments')
-    # created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return 'For: "{}", by {}'.format(self.news_commented.text[:15] + '...', self.author.email)
+        return 'For: "{}", by {}'.format(self.news_commented.text[:15] + '...', self.author.email) + f' at {self.created}.'
 
 # class Event(models.Model):
 #     title = models.TextField(blank=False, default='')
@@ -60,3 +60,11 @@ class Comment(models.Model):
 #     creator = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=False, related_name='events_created')
 #     news = models.OneToOneField(News, on_delete=models.CASCADE, null=True, blank=True, related_name='event')
 #     date = models.DateTimeField()
+
+
+class Answer(models.Model):
+    text = models.TextField(blank=False, default='')
+    author = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True, related_name='answers')
+    like_counter = models.BigIntegerField(default=0)
+    answer_to = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=False, related_name='answers')
+    created = models.DateTimeField(auto_now_add=True)

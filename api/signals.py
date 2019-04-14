@@ -1,4 +1,3 @@
-from allauth.account.models import *
 from django.db.models.signals import *
 from django.dispatch import receiver
 

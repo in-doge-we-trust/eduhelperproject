@@ -139,7 +139,7 @@ class NewsList(generics.ListCreateAPIView):
                 print("Tag %s created.".format(tag_new.name))
                 user_profile.tags.add(tag_new)
                 print("Tag %s added to user's profile.".format(tag_new.name))
-            instance.tags.add(Tag.objects.get(name=tag))
+                instance.tags.add(Tag.objects.get(name=tag))
 
     def get_queryset(self):
         start = int(self.request.GET.get('start', default=0))
@@ -193,9 +193,13 @@ class AttachmentList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         path = storage.child(self.request.user.email)\
             .child(self.request.POST.get('label') + 's')\
-            .child(uuid.uuid4())
+            .child(str(uuid.uuid4()))
         path.put(self.request.POST.get('file'))
-        serializer.save(owner=self.request.user, url=path.get_url())
+        serializer.save(
+            owner=self.request.user,
+            url=path.get_url(),
+            attached_to=News.objects.get(pk=self.request.POST.get('attach_to'))
+        )
 
 
 class AttachmentDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -204,13 +208,31 @@ class AttachmentDetails(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAdminUser,)
 
 
+class AnswersList(generics.ListAPIView):
+    serializer_class = AnswerSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Answer.objects.filter(answer_to__author=user_id).order_by('-id')
+
+
+class AddAnswer(generics.CreateAPIView):
+    serializer_class = AnswerSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        comment = Comment.objects.get(pk=self.kwargs['pk'])
+        serializer.save(answer_to=comment, author=self.request.user)
+
+
 class CommentList(generics.ListAPIView):
     queryset = Comment.objects.all().order_by('-id')
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
 
-class CommentAdd(generics.ListCreateAPIView):
+class CommentAdd(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAuthenticated,)

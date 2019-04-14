@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
-from api.models import Tag, Profile, News, Comment, Attachment
+from api.models import Tag, Profile, News, Comment, Attachment, Answer
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -38,25 +38,43 @@ class UserShortInfoSerializer(serializers.ModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'username', 'email', 'profile')
 
 
+class AnswerSerializer(serializers.ModelSerializer):
+    author = UserShortInfoSerializer(many=False, read_only=True)
+    like_counter = serializers.IntegerField(read_only=True)
+    answer_to = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Answer
+        fields = ('id', 'text', 'author', 'created', 'like_counter', 'answer_to')
+
+
 class CommentSerializer(serializers.ModelSerializer):
     author = UserShortInfoSerializer(many=False, read_only=True)
     like_counter = serializers.IntegerField(read_only=True)
     news_commented = serializers.PrimaryKeyRelatedField(read_only=True)
+    answers = AnswerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'author', 'like_counter', 'news_commented')
+        fields = ('id', 'text', 'author', 'created', 'like_counter', 'news_commented', 'answers')
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
-    file = serializers.FileField()
+    file = serializers.FileField(write_only=True)
     url = serializers.URLField(read_only=True)
     owner = serializers.PrimaryKeyRelatedField(read_only=True)
     attached_to = serializers.PrimaryKeyRelatedField(read_only=True)
+    attach_to = serializers.IntegerField(write_only=True, required=True)
+
+    def create(self, validated_data):
+        file = validated_data.pop('file', None)
+        attach_to = validated_data.pop('attach_to', None)
+        attachment = Attachment.objects.create(**validated_data)
+        return attachment
 
     class Meta:
         model = Attachment
-        fields = ('id', 'file', 'url', 'label', 'owner', 'attached_to', 'uploaded')
+        fields = ('id', 'file', 'url', 'label', 'owner', 'attached_to', 'uploaded', 'attach_to')
 
 
 # class EventSerializer(serializers.ModelSerializer):
