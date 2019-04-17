@@ -47,7 +47,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'finelifex-eduhelper-api.herokuapp.com']
 
 # AUTHENTICATION PARAMETERS BEGIN
 # This is required otherwise it asks for email server
