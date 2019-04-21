@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_jwt.views import *
+from rest_framework_swagger.views import get_swagger_view
 
 from api import views
 
@@ -29,4 +30,5 @@ urlpatterns = [
     path('auth/refresh-token/', refresh_jwt_token),
     path('auth/get-current-user/', views.CurrentUser.as_view()),
     path('auth/get-current-user/change-photo', views.change_photo),
+    path('docs/', get_swagger_view('EduHelperAPI')),
 ]
