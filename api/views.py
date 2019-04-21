@@ -139,7 +139,7 @@ class NewsList(generics.ListCreateAPIView):
                 print("Tag %s created.".format(tag_new.name))
                 user_profile.tags.add(tag_new)
                 print("Tag %s added to user's profile.".format(tag_new.name))
-                instance.tags.add(Tag.objects.get(name=tag))
+            instance.tags.add(Tag.objects.get(name=tag))
 
     def get_queryset(self):
         start = int(self.request.GET.get('start', default=0))
