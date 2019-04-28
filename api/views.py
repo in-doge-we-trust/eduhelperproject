@@ -191,13 +191,16 @@ class AttachmentList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
+        uid = uuid.uuid4()
+        uploaded = storage.child(self.request.user.email)\
+            .child(self.request.POST.get('label') + 's')\
+            .child(str(uid)).put(self.request.FILES.get('file'))
         path = storage.child(self.request.user.email)\
             .child(self.request.POST.get('label') + 's')\
-            .child(str(uuid.uuid4()))
-        path.put(self.request.POST.get('file'))
+            .child(str(uid))
         serializer.save(
             owner=self.request.user,
-            url=path.get_url(),
+            url=path.get_url(uploaded['downloadTokens']),
             attached_to=News.objects.get(pk=self.request.POST.get('attach_to'))
         )
 
