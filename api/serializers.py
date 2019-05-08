@@ -60,8 +60,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
-    file = serializers.FileField(write_only=True)
-    url = serializers.URLField(read_only=True)
+    file = serializers.FileField(write_only=True, required=False)
+    url = serializers.URLField(required=False)
     owner = serializers.PrimaryKeyRelatedField(read_only=True)
     attached_to = serializers.PrimaryKeyRelatedField(read_only=True)
     attach_to = serializers.IntegerField(write_only=True, required=True)
