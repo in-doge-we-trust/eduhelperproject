@@ -204,7 +204,6 @@ class AttachmentList(generics.ListCreateAPIView):
             path = storage.child(self.request.user.email)\
                 .child(self.request.POST.get('label') + 's')\
                 .child(str(uid))
-            print(self.request.FILES.get('file').name)
             serializer.save(
                 name=self.request.FILES.get('file').name,
                 owner=self.request.user,
