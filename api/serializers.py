@@ -65,7 +65,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True)
     attached_to = serializers.PrimaryKeyRelatedField(read_only=True)
     attach_to = serializers.IntegerField(write_only=True, required=True)
-    name = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True, max_length=1000)
 
     def create(self, validated_data):
         file = validated_data.pop('file', None)
