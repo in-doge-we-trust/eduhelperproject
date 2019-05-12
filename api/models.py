@@ -39,6 +39,7 @@ class Attachment(models.Model):
     attached_to = models.ForeignKey(News, on_delete=models.CASCADE, blank=True, null=True, related_name='attachments')
     label = models.CharField(max_length=50, choices=ATTACHMENT_TYPES, default='link')
     uploaded = models.DateTimeField(auto_now_add=True)
+    name = models.TextField(null=True)
 
     def __str__(self):
         return self.owner.email

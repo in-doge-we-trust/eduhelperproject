@@ -205,6 +205,7 @@ class AttachmentList(generics.ListCreateAPIView):
                 .child(self.request.POST.get('label') + 's')\
                 .child(str(uid))
             serializer.save(
+                name=self.request.FILES.get('file'),
                 owner=self.request.user,
                 url=path.get_url(uploaded['downloadTokens']),
                 attached_to=News.objects.get(pk=self.request.POST.get('attach_to'))

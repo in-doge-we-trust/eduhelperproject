@@ -65,6 +65,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True)
     attached_to = serializers.PrimaryKeyRelatedField(read_only=True)
     attach_to = serializers.IntegerField(write_only=True, required=True)
+    name = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         file = validated_data.pop('file', None)
@@ -74,7 +75,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attachment
-        fields = ('id', 'file', 'url', 'label', 'owner', 'attached_to', 'uploaded', 'attach_to')
+        fields = ('id', 'file', 'name', 'url', 'label', 'owner', 'attached_to', 'uploaded', 'attach_to')
 
 
 # class EventSerializer(serializers.ModelSerializer):
